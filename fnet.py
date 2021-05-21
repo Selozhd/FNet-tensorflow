@@ -19,9 +19,9 @@ class Forward(tf.keras.layers.Layer):
         
     def call(self, inputs, training=False):
         X = self.dense1(inputs)
-        X = self.dropout(X)
+        X = self.dropout(X, training=training)
         X = self.dense2(X)
-        X = self.dropout(X)
+        X = self.dropout(X, training=training)
         return X
 
     def get_config(self):
@@ -47,7 +47,7 @@ class FNetBlock(tf.keras.layers.Layer):
     def call(self, inputs, training=False):
         X_complex = tf.cast(inputs, tf.complex64)
         X_fft = tf.math.real(tf.signal.fft2d(X_complex))
-        X_norm1 = self.norm_fourier(X_fft + inputs)
+        X_norm1 = self.norm_fourier(X_fft + inputs, training=training)
         X_dense = self.ffn(X_norm1)
-        X_norm2 = self.norm_ffn(X_dense + X_norm1)
+        X_norm2 = self.norm_ffn(X_dense + X_norm1, training=training)
         return X_norm2
